@@ -97,7 +97,20 @@ module Lighthouse
   #
   class Project < Base
     def tickets(options = {})
-      Ticket.find(:all, :params => options.update(:project_id => id))
+      # If no page param given fetch them all
+      if options.has_key?(:page)
+        Ticket.find(:all, :params => options.update(:project_id => id) )
+      else
+        tickets = []
+        page = 1
+        loop do 
+           ticket_set = Ticket.find(:all, :params => options.update(:project_id => id, :page => page ) )
+           break if ticket_set.empty?
+           tickets << ticket_set
+           page += 1
+        end
+        tickets.flatten
+      end
     end
   
     def messages(options = {})
@@ -179,6 +192,14 @@ module Lighthouse
         tag.include?(' ') ? tag.inspect : tag
       end.join(" ") if @tags.is_a?(Array)
       @tags = nil ; save_without_tags
+    end
+    
+    def project_id
+      @prefix_options[:project_id]
+    end
+    
+    def page
+      @prefix_options[:page]
     end
     
     alias_method_chain :save, :tags
