@@ -1,4 +1,6 @@
 require 'rubygems'
+gem 'activesupport', '= 2.0.4'
+gem 'activeresource', '= 2.0.4'
 require 'activesupport'
 require 'activeresource'
 
